@@ -13,6 +13,8 @@
 | 5 | [Spark 内存模型](#q5-spark-内存模型) | ⭐⭐⭐ |
 | 6 | [Spark Stage 划分与 DAG](#q6-spark-stage-划分与-dag) | ⭐⭐ |
 | 7 | [Spark Catalyst 优化器原理](#q7-spark-catalyst-优化器原理) | ⭐⭐⭐ |
+| 8 | [repartition vs coalesce](#q8-repartition-vs-coalesce) | ⭐⭐⭐ |
+| 9 | [Predicate Pushdown 与 Partition Pruning](#q9-predicate-pushdown-与-partition-pruning) | ⭐⭐⭐ |
 
 ---
 
@@ -357,4 +359,134 @@ User Code → DAG → DAGScheduler → TaskScheduler → Executor
 ```
 Analysis → Logical Opt → Physical Plan → CodeGen
 谓词下推 + 列裁剪 + Join策略 + Whole-Stage CodeGen
+```
+
+---
+
+## Q8. repartition vs coalesce
+
+> 📌 **频率**: 2025 超高频 · ★★★  
+> `Spark Tuning: repartition vs coalesce — 决策维度`
+
+### 🎯 核心区别
+
+| 维度 | `repartition` | `coalesce` |
+|------|--------------|------------|
+| Shuffle | **有** Shuffle，代价高 | **无** Shuffle，代价低（Narrow Dependency） |
+| 方向 | 增加 or 减少分区 | **只能减少**分区 |
+| 数据均匀性 | ✅ 全 Shuffle 产生均匀分区 | ❌ 只合并现有分区，不重分布 |
+| 适用场景 | 数据倾斜 → 打散重均匀 / 做 join/groupBy 前 | 数据均匀，只是要减少分区数 |
+
+### 📊 决策维度
+
+```
+┌─── repartition ─────────────────────┐  ┌─── coalesce ───────────────────────┐
+│                                      │  │                                    │
+│  • 增加分区 → 唯一选择               │  │  • 减少分区 → 首选                 │
+│  • 数据倾斜 → 打散重均匀             │  │  • 数据均匀，只是要减少             │
+│  • 做 join / groupBy 前              │  │  • 写出 S3 前（不关心均匀）         │
+│    repartition(200, 'user_id')       │  │  • Silver→Gold 过滤后缩减           │
+│    按 key 分区，同 key 同 partition   │  │    coalesce(20).write.parquet()     │
+│                                      │  │                                    │
+└──────────────────────────────────────┘  └────────────────────────────────────┘
+```
+
+### ⚠️ 常见陷阱
+
+```python
+# ❌ 错误：repartition(200).write → 写出 200 个文件！
+df.repartition(200).write.parquet("s3://...")  # 200 个小文件
+
+# ✅ 正确：先均匀处理，再缩减文件数
+df.repartition(200).coalesce(20).write.parquet("s3://...")
+# → 200 分区均匀计算，最终合并为 20 个文件写出
+```
+
+### 📝 使用场景总结
+
+| 场景 | 用哪个 | 示例 |
+|------|--------|------|
+| 数据倾斜需打散 | `repartition` | `df.repartition(200, col("user_id"))` |
+| Join/GroupBy 前对齐 | `repartition` | `df.repartition(col("join_key"))` |
+| 过滤后分区变空 | `coalesce` | `df.filter(...).coalesce(10)` |
+| 写出 S3 控制文件数 | `coalesce` | `df.coalesce(20).write.parquet(...)` |
+| 计算需均匀 + 写出需少 | 组合使用 | `repartition(200).coalesce(20).write` |
+
+### 💡 类比记忆
+
+> - **repartition** = 重新洗牌发牌 🃏（全 shuffle，绝对均匀，但代价大）
+> - **coalesce** = 把几桌人合到一桌 🪑（不重新排座位，只是减少桌子数）
+
+### 🧠 记忆锚点
+
+```
+repartition = Full Shuffle + 均匀 + 可增可减 + 贵
+coalesce = No Shuffle + 只减 + 便宜 + 可能不均
+组合技: repartition(N).coalesce(M).write → 均匀计算 + 少文件写出
+```
+
+---
+
+## Q9. Predicate Pushdown 与 Partition Pruning
+
+> 📌 **频率**: 2025 超高频 · ★★★  
+> `Predicate Pushdown` + `Partition Pruning` — Spark 调优三板斧之二
+
+### 🎯 两个层级
+
+| 层级 | English | 含义 | 谁做 |
+|------|---------|------|------|
+| **Partition Pruning** | 分区裁剪 | Athena/Spark 扫描时直接跳过不相关分区目录 | 查询引擎 |
+| **Predicate Pushdown** | 谓词下推 | 让 Parquet/Iceberg 在文件扫描阶段就过滤掉不需要的 Row Group | 数据源 |
+
+### 📊 工作原理
+
+```
+┌─── Partition Pruning ──────────────────────────────────┐
+│  WHERE region = 'us-east'                              │
+│  → Spark 只读 s3://.../region=us-east/ 下的文件         │
+│  → 其他 region 目录完全不碰                             │
+│  → 扫描量直接 ÷ 分区数                                 │
+└────────────────────────────────────────────────────────┘
+                    ↓
+┌─── Predicate Pushdown (Row Group Filter) ──────────────┐
+│  WHERE amount > 50000                                   │
+│  → Parquet 文件每个 Row Group 有 min/max 统计           │
+│  → Row Group max=3000 < 50000 → 跳过不读                │
+│  → 只读满足条件的 Row Group                             │
+└────────────────────────────────────────────────────────┘
+```
+
+### 📝 验证方法
+
+```python
+# 查看 Spark 的物理计划，确认 pushdown 生效
+df.filter(col("amount") > 50000).explain(True)
+
+# 输出中找:
+# PushedFilters: [IsNotNull(amount), GreaterThan(amount, 50000)]
+# PartitionFilters: [isnotnull(region), (region = us-east)]
+```
+
+### ⚠️ Pushdown 失效的常见原因
+
+| 原因 | English | 说明 |
+|------|---------|------|
+| 使用 UDF | UDF blocks pushdown | Catalyst 无法解析 UDF 内部逻辑 → 不推 |
+| 复杂表达式 | Complex Expression | 如 `WHERE func(col) > 10` 无法推 |
+| 非内置函数 | Non-builtin Function | 用内置函数 (built-in) 才能让 Catalyst 推下去 |
+| DataFrame cache 后 | Cached DF | 从内存读，不再推到存储层 |
+
+### 💡 类比记忆
+
+> - **Partition Pruning** = 去图书馆只去「科学区」的那个楼层（目录级跳过）📚
+> - **Predicate Pushdown** = 到了楼层后，看每个书架标签「编号 100-200」，你要 #500 的 → 跳过这个书架（Row Group 级跳过）🏷️
+
+### 🧠 记忆锚点
+
+```
+Partition Pruning = 目录级跳过（按分区列）
+Predicate Pushdown = Row Group 级跳过（按 min/max 统计）
+验证: df.explain(True) → 看 PushedFilters / PartitionFilters
+陷阱: UDF 阻断 pushdown → 用内置函数
 ```

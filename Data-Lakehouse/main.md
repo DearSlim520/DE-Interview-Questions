@@ -8,6 +8,7 @@
 |---|------|------|
 | 1 | [Iceberg metadata 三层结构](#q1-iceberg-metadata-三层结构) | ⭐⭐⭐ |
 | 2 | [Paimon 与 Iceberg 区别](#q2-paimon-与-iceberg-区别) | ⭐⭐⭐ |
+| 3 | [Iceberg 元数据三层过滤](#q3-iceberg-元数据三层过滤) | ⭐⭐⭐ |
 
 ---
 
@@ -113,4 +114,77 @@ Three layers: metadata.json → Manifest List → Manifest File
 ```
 Iceberg = Table Format + Batch-first + 广泛生态
 Paimon = Streaming Lakehouse + LSM + Changelog Native + Flink 深绑
+```
+
+---
+
+## Q3. Iceberg 元数据三层过滤
+
+> 📌 **频率**: 2025 高频 · ★★★  
+> `Iceberg Metadata-driven Three-level Filtering`
+
+### 🎯 三层过滤漏斗
+
+Iceberg 在查询时**不需要扫描数据本身**就能层层过滤，只用元数据决定读哪些文件：
+
+```
+┌─── ① Partition Pruning（分区裁剪）─────────────────────┐
+│  元数据驱动（不靠目录名）→ 直接跳过不相关分区的所有文件  │
+│  WHERE date = '2024-01' → 其他月份文件完全不碰          │
+│                                                         │
+│  vs Hive: 靠目录名，改列名就坏; Iceberg: 元数据记录，稳定│
+└─────────────────────────────────────────────────────────┘
+                    ↓ 剩余文件进入下一层
+┌─── ② File Pruning（文件级过滤）────────────────────────┐
+│  Manifest File 里记录每个数据文件的 Column-level Stats:  │
+│                                                         │
+│    file-001.parquet                                     │
+│    amount: min=10, max=9800                             │
+│    region: ['US', 'EU']                                 │
+│                                                         │
+│  WHERE amount > 10000 → max=9800 不够大 → 整个文件跳过  │
+└─────────────────────────────────────────────────────────┘
+                    ↓ 剩余文件进入下一层
+┌─── ③ Row Group Pruning（Parquet 内部）─────────────────┐
+│  每个 Parquet 文件内部分 Row Group，各自有 min/max 统计  │
+│                                                         │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐    │
+│  │RG1: max=800  │ │RG2: max=85000│ │RG3: max=3000 │    │
+│  │    跳过 ✗    │ │    读取 ✓    │ │    跳过 ✗    │    │
+│  └──────────────┘ └──────────────┘ └──────────────┘    │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 📊 效果示例
+
+```
+10TB 原始数据, WHERE date='2024-01' AND amount>50000 AND region='US'
+
+① Partition Pruning:  1000 文件 → 80 文件   (按 date 过滤)
+② File Stats Pruning:   80 文件 → 12 文件   (按 amount min/max 过滤)
+③ Row Group Pruning:  实际读取 ≈ 原始数据的 0.5%
+```
+
+### 📝 关键笔记 (Key Notes)
+
+| 知识点 | English | 说明 |
+|--------|---------|------|
+| Hidden Partitioning | 隐式分区 | 分区转换写在建表时 (`PARTITION BY days(ts)`)，查询不需要感知分区列 |
+| Sort Order | 排序键 | 按常查列排序 → 同值聚集 → File Stats 更精准 → 跳过更多 |
+| 验证方法 | Explain Plan | `df.explain(True)` 看 `PushedFilters` / `PartitionFilters` |
+| UDF 陷阱 | UDF blocks pushdown | UDF 会阻断 Predicate Pushdown；用内置函数才能让 Catalyst 推下去 |
+
+### 💡 类比记忆
+
+> 三层过滤 = 快递分拣 📦
+> - Partition Pruning = 按城市分仓（不是这个城市的仓库整个跳过）
+> - File Pruning = 按包裹重量标签过滤（标签写着 max=5kg，你要找 >10kg 的 → 跳过整箱）
+> - Row Group Pruning = 打开箱子后按小格子的标签再过滤（只拿符合条件的那格）
+
+### 🧠 记忆锚点
+
+```
+三层漏斗: Partition Pruning → File Pruning (Manifest Stats) → Row Group Pruning (Parquet内部)
+效果: 10TB → 实际读 0.5%
+关键: Hidden Partitioning + Sort Order 让 Stats 更精准
 ```
