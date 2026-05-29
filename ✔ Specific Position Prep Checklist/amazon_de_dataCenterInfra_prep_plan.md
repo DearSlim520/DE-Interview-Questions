@@ -11,7 +11,7 @@
 
 ---
 
-## 今晚（下班后）
+## 5/28 Wed — Day 0（今晚下班后）
 
 - [ ] 写出3个LP故事要点（格式：发生什么 / 我做了什么 / 结果数字）
   - 故事1：Ownership 或 Deliver Results
@@ -21,7 +21,7 @@
 
 ---
 
-## Day 1（明天）
+## 5/29 Thu — Day 1
 
 **SQL**
 - [ ] LC 185 — Department Top Three Salaries（DENSE_RANK）
@@ -36,7 +36,7 @@
 
 ---
 
-## Day 2
+## 5/30 Fri — Day 2
 
 **SQL**
 - [ ] LC 1454 — Active Users（连续登录）
@@ -56,7 +56,7 @@
 
 ---
 
-## Day 3
+## 5/31 Sat — Day 3
 
 **系统设计**
 - [ ] Hello Interview：Design a Multi-Source ETL Pipeline（口述45分钟）
@@ -75,7 +75,7 @@
 
 ---
 
-## Day 4
+## 6/1 Sun — Day 4
 
 **SQL**
 - [ ] LC 1321 — Restaurant Growth（滑动窗口AVG）
@@ -95,7 +95,7 @@
 
 ---
 
-## Day 5
+## 6/2 Mon — Day 5
 
 **系统设计**
 - [ ] Hello Interview：Design a Data Quality Monitoring System（口述45分钟）
@@ -117,7 +117,7 @@
 
 ---
 
-## Day 6
+## 6/3 Tue — Day 6
 
 **全真Mock #1**
 - [ ] LP 2题（英文，计时，不看提纲）
@@ -131,7 +131,7 @@
 
 ---
 
-## Day 7
+## 6/4 Wed — Day 7
 
 **SQL专项补强**
 - [ ] Redshift特有语法能手写：COPY、UNLOAD、LISTAGG
@@ -148,7 +148,7 @@
 
 ---
 
-## Day 8
+## 6/5 Thu — Day 8
 
 **全真Mock #2（提高难度）**
 - [ ] LP 3题（加入追问：如果重来？你的具体贡献？利益相关方？）
@@ -161,7 +161,7 @@
 
 ---
 
-## 面试前2天
+## 6/6-6/7 — 面试前2天
 
 - [ ] 每天2个LP mock（语音，不打草稿）
 - [ ] 每天1个系统设计完整口述（计时）
