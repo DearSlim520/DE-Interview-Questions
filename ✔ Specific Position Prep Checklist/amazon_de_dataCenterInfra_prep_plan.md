@@ -11,7 +11,7 @@
 
 ---
 
-## 5/28 Wed — Day 0（今晚下班后）
+## 5/28 Wed — Day 0
 
 - [ ] 写出3个LP故事要点（格式：发生什么 / 我做了什么 / 结果数字）
   - 故事1：Ownership 或 Deliver Results
