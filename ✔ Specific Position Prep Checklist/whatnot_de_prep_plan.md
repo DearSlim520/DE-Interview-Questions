@@ -288,3 +288,119 @@ Whatnot的behavioral更casual，但这几个方向要准备：
 | Kafka/CDC | 🟡了解 | 🔴深度 | 补充Debezium |
 | Data Vault | ❌不考 | 🟡了解 | **新增，本文件** |
 
+
+---
+
+## 每日准备计划（在Amazon plan基础上叠加）
+
+> 假设Amazon面试在前，Whatnot在后1-2周
+> 每天额外增加30-45分钟Whatnot专项，不替换Amazon计划
+
+---
+
+### 5/29 Thu — Day 1
+- [ ] 下载Whatnot app，走完完整买家+卖家流程
+- [ ] 记录核心事件：开播/进房间/出价/购买/支付/发货
+- [ ] 想清楚：最重要的3张表是什么（写下来，不超过5分钟）
+
+---
+
+### 5/30 Fri — Day 2
+**Snowflake基础（45分钟）**
+- [ ] 存算分离架构：Virtual Warehouse概念，和Redshift的核心区别
+- [ ] Micro-partitioning vs Redshift DISTKEY/SORTKEY：Snowflake自动，Redshift手动
+- [ ] Time Travel语法能手写
+- [ ] Zero-Copy Cloning：是什么、用在哪
+
+---
+
+### 5/31 Sat — Day 3
+**Snowflake进阶 + Snowpipe（45分钟）**
+- [ ] Snowpipe：持续从S3自动加载，和Kinesis Firehose对比
+- [ ] Streams + Tasks：CDC增量处理的实现方式
+- [ ] Clustering Key选择逻辑：大表高基数列，类比Redshift Sort Key
+- [ ] 能口述：Snowflake在Whatnot架构里的位置（数据从Kafka进来，最终落到Snowflake）
+
+---
+
+### 6/1 Sun — Day 4
+**dbt深度（45分钟）**
+- [ ] incremental model写法：`is_incremental()` + `unique_key`
+- [ ] dbt tests四种：not_null / unique / accepted_values / relationships
+- [ ] dbt contract：enforced: true，schema不被破坏
+- [ ] source freshness：上游数据延迟告警
+- [ ] 能口述：dbt在ELT里的位置，为什么选dbt而不是手写SQL transform
+
+---
+
+### 6/2 Mon — Day 5
+**Kafka + Debezium CDC（30分钟，你已有MSK基础）**
+- [ ] Debezium原理：读binlog → Kafka topic
+- [ ] CDC事件格式：before/after/op字段
+- [ ] 和Kinesis的对比：Kafka更灵活，Kinesis更托管
+- [ ] 典型架构口述：PostgreSQL → Debezium → Kafka → Spark/Flink → Snowflake
+
+**Data Vault概念（15分钟）**
+- [ ] Hub / Link / Satellite三个概念各一句话解释
+- [ ] 什么场景选Data Vault vs Star Schema（一句话：schema变化频繁选Data Vault）
+
+---
+
+### 6/3 Tue — Day 6
+**Case Study专项准备（60分钟，Whatnot最特殊的考点）**
+- [ ] 设计Whatnot seller analytics数据模型（口述）
+  - 核心fact表：`livestream_session_fact`、`transaction_fact`
+  - 核心dim表：`dim_seller`、`dim_buyer`、`dim_item`
+  - 关键metrics：GMV、转化率、平均观看时长、复购率
+- [ ] 设计livestream事件pipeline（口述）
+  - 事件流 → Kafka → Spark Streaming → Snowflake → dbt → Dashboard
+  - 要讲到：幂等性、数据质量、延迟SLA
+- [ ] 准备fraud detection思路
+  - 同一买家短时间内高频出价 → 滑动窗口计数 → 超阈值进人工队列
+
+---
+
+### 6/4 Wed — Day 7
+**SQL专项（Whatnot电商场景，30分钟）**
+- [ ] LC 1193 — Monthly Transactions I
+- [ ] LC 1174 — Immediate Food Delivery II（转化漏斗）
+- [ ] LC 1341 — Movie Rating
+
+**数据可观测性概念（15分钟）**
+- [ ] 数据质量五维度能口述：完整性/准确性/时效性/一致性/唯一性
+- [ ] Monte Carlo是什么，Great Expectations是什么，各自定位
+- [ ] 能设计简单的DQ监控系统（行数异常/null率/freshness/schema变化）
+
+---
+
+### 6/5 Thu — Day 8
+**Dagster概念（20分钟）**
+- [ ] Asset-centric vs task-centric，一句话解释区别
+- [ ] 为什么Dagster比Airflow更适合数据资产管理
+- [ ] 不需要写代码，能聊清楚概念即可
+
+**Semantic Layer + Data Contract（20分钟）**
+- [ ] Semantic layer：统一metric定义，所有人用同一个GMV
+- [ ] Data contract：上下游schema协议，谁负责什么
+- [ ] 能结合Whatnot业务举例子
+
+**SQL专项**
+- [ ] LC 1204 — Last Person to Fit in the Bus
+- [ ] LC 1393 — Capital Gain/Loss（订单状态追踪）
+
+---
+
+### 6/6 Fri — Day 9
+**全真Mock — Whatnot版（60分钟）**
+- [ ] SQL 4题/30分钟（电商场景，计时）
+- [ ] Case study口述：设计seller实时dashboard（15分钟）
+- [ ] Behavioral 2题（casual风格，不用严格STAR）
+- [ ] 复盘：哪里回答太Amazon化了？哪里缺product sense？
+
+---
+
+### 6/7 Sat — Day 10（面试前）
+- [ ] 把Whatnot app再用一遍，想好2-3个具体的产品改进点
+- [ ] 把问面试官的5个问题背熟
+- [ ] Snowflake / dbt / Kafka各说一遍，确认流利
+
