@@ -332,7 +332,6 @@ LATERAL VIEW EXPLODE(MAP('math', math, 'english', english)) t AS subject, score;
 #### 方法一: Self-JOIN + BETWEEN (万能方法，适用于日期不连续的场景)
 
 ```sql
--- LeetCode 1321: Restaurant Growth
 WITH cte_daily_sum AS (
     SELECT visited_on, SUM(amount) AS daily_amount 
     FROM customer 
