@@ -12,6 +12,7 @@
 | 4 | [漏斗转化](#q4-漏斗转化) | ⭐⭐⭐ |
 | 5 | [同环比](#q5-同环比) | ⭐⭐ |
 | 6 | [行转列 / 列转行](#q6-行转列--列转行) | ⭐⭐ |
+| 7 | [滑动窗口](#q7-滑动窗口) | ⭐⭐⭐ |
 
 ---
 
@@ -303,4 +304,80 @@ LATERAL VIEW EXPLODE(MAP('math', math, 'english', english)) t AS subject, score;
 ```
 行转列: MAX(CASE WHEN col='x' THEN val END) + GROUP BY
 列转行: UNION ALL 或 LATERAL VIEW EXPLODE
+```
+
+---
+
+## Q7. 滑动窗口
+
+> 📌 **频率**: 2025 高频 · ★★★  
+> `Sliding Window` — 固定区间聚合 (Rolling Sum / Moving Average)
+
+### 🎯 核心思路
+
+```
+滑动窗口 = 对每一行，聚合其前N行（或前N天）的数据
+
+示例: 7天滚动求和
+日期        金额    7天滚动和
+2025-01-01  100     NULL (不足7天)
+2025-01-02  200     NULL
+...
+2025-01-07  150     (前7天总和)
+2025-01-08  180     (01-02到01-08的总和)
+```
+
+### 📝 SQL 实现
+
+#### 方法一: Self-JOIN + BETWEEN (万能方法，适用于日期不连续的场景)
+
+```sql
+-- LeetCode 1321: Restaurant Growth
+WITH cte_daily_sum AS (
+    SELECT visited_on, SUM(amount) AS daily_amount 
+    FROM customer 
+    GROUP BY visited_on
+)
+SELECT c.visited_on,
+       SUM(p.daily_amount) AS amount,
+       ROUND(SUM(p.daily_amount)/7, 2) AS average_amount
+FROM cte_daily_sum c
+    LEFT JOIN cte_daily_sum p
+        ON p.visited_on BETWEEN DATE_ADD(c.visited_on, INTERVAL -6 DAY) AND c.visited_on
+GROUP BY 1
+HAVING COUNT(p.visited_on) = 7
+ORDER BY 1;
+```
+
+#### 方法二: Window Function ROWS BETWEEN (日期连续时更简洁)
+
+```sql
+-- 日期连续时可以用 ROWS BETWEEN
+SELECT
+  visited_on,
+  SUM(daily_amount) OVER(ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS amount,
+  ROUND(AVG(daily_amount) OVER(ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 2) AS average_amount
+FROM cte_daily_sum
+QUALIFY ROW_NUMBER() OVER(ORDER BY visited_on) >= 7;  -- 确保满7天
+```
+
+### ⚠️ 两种方法对比
+
+| 场景 | Self-JOIN + BETWEEN | ROWS BETWEEN |
+|------|-------------------|--------------|
+| 日期有缺失/不连续 | ✅ 正确 | ❌ 会算错 (ROWS是行数不是天数) |
+| 日期连续 | ✅ 正确 | ✅ 正确且更快 |
+| 性能 | 较慢 (笛卡尔积) | 更快 (窗口计算) |
+| 灵活性 | 高 (任意条件) | 中 (只能按行数) |
+
+### 💡 类比记忆
+
+> 滑动窗口 = 火车车窗 🚂 — 火车前进，窗户大小固定(7天)，看到的风景(数据)在变。每到一个新站(新日期)，最远的那站滑出窗口，新站滑入。
+
+### 🧠 记忆锚点
+
+```
+Self-JOIN法: JOIN ON date BETWEEN date-6 AND date → GROUP BY → HAVING COUNT = 7
+Window法:   SUM() OVER(ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)
+关键: 日期不连续用Self-JOIN, 连续用ROWS BETWEEN
 ```
