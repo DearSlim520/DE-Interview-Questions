@@ -18,27 +18,31 @@
 ### 🟢 绿色 (高优先级)
 | # | LP | 链接 |
 |---|-----|------|
-| 4 | [Are Right, a Lot](#4-are-right-a-lot-🟢) | 决策正确 |
-| 5 | [Learn and Be Curious](#5-learn-and-be-curious-🟢) | 好奇求知 |
+| 4 | [Learn and Be Curious](#4-learn-and-be-curious-🟢) | 好奇求知 |
+| 5 | [Think Big](#5-think-big-🟢) | 远见卓识 |
+| 6 | [Bias for Action](#6-bias-for-action-🟢) | 崇尚行动 |
+| 7 | [Have Backbone, Disagree and Commit](#7-have-backbone-disagree-and-commit-🟢) | 敢于谏言 |
+| 8 | [Deliver Results](#8-deliver-results-🟢) | 达成业绩 |
 
 ### 🔵 蓝色 (中优先级)
 | # | LP | 链接 |
 |---|-----|------|
-| 6 | [Invent and Simplify](#6-invent-and-simplify-🔵) | 创新简化 |
-| 7 | [Insist on Highest Standards](#7-insist-on-highest-standards-🔵) | 最高标准 |
-| 8 | [Dive Deep](#8-dive-deep-🔵) | 刨根问底 |
-| 9 | [Have Backbone, Disagree and Commit](#9-have-backbone-disagree-and-commit-🔵) | 敢于谏言 |
-| 10 | [Deliver Results](#10-deliver-results-🔵) | 达成业绩 |
+| 9 | [Invent and Simplify](#9-invent-and-simplify-🔵) | 创新简化 |
+| 10 | [Are Right, a Lot](#10-are-right-a-lot-🔵) | 决策正确 |
+| 11 | [Dive Deep](#11-dive-deep-🔵) | 刨根问底 |
 
-### 🟣 紫色 (了解即可)
+### 🟣 紫色 (较低优先级)
 | # | LP | 链接 |
 |---|-----|------|
-| 11 | [Bias for Action](#11-bias-for-action-🟣) | 崇尚行动 |
-| 12 | [Think Big](#12-think-big-🟣) | 远见卓识 |
-| 13 | [Frugality](#13-frugality-🟣) | 勤俭节约 |
-| 14 | [Hire and Develop the Best](#14-hire-and-develop-the-best-🟣) | 选贤育能 |
-| 15 | [Strive to be Earth's Best Employer](#15-strive-to-be-earths-best-employer-🟣) | 最佳雇主 |
-| 16 | [Success and Scale Bring Broad Responsibility](#16-success-and-scale-bring-broad-responsibility-🟣) | 担当责任 |
+| 12 | [Insist on Highest Standards](#12-insist-on-highest-standards-🟣) | 最高标准 |
+
+### 无色 (了解即可)
+| # | LP | 链接 |
+|---|-----|------|
+| 13 | [Hire and Develop the Best](#13-hire-and-develop-the-best) | 选贤育能 |
+| 14 | [Frugality](#14-frugality) | 勤俭节约 |
+| 15 | [Strive to be Earth's Best Employer](#15-strive-to-be-earths-best-employer) | 最佳雇主 |
+| 16 | [Success and Scale Bring Broad Responsibility](#16-success-and-scale-bring-broad-responsibility) | 担当责任 |
 
 ### 🆕 Functional Competency (2026必考)
 | # | 题目 | 链接 |
