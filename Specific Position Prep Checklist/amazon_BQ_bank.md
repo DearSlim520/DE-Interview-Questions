@@ -11,9 +11,9 @@
 ### 🟡 黄色 (最高优先级)
 | # | LP | 链接 |
 |---|-----|------|
-| 1 | [Customer Obsession](#1-customer-obsession-🟡) | 客户至上 |
-| 2 | [Ownership](#2-ownership-🟡) | 主人翁精神 |
-| 3 | [Earn Trust](#3-earn-trust-🟡) | 赢得信任 |
+| 1 | [Ownership](#1-ownership-🟡) | 主人翁精神 |
+| 2 | [Earn Trust](#2-earn-trust-🟡) | 赢得信任 |
+| 3 | [Deliver Results](#3-deliver-results-🟡) | 达成业绩 |
 
 ### 🟢 绿色 (高优先级)
 | # | LP | 链接 |
@@ -22,19 +22,19 @@
 | 5 | [Think Big](#5-think-big-🟢) | 远见卓识 |
 | 6 | [Bias for Action](#6-bias-for-action-🟢) | 崇尚行动 |
 | 7 | [Have Backbone, Disagree and Commit](#7-have-backbone-disagree-and-commit-🟢) | 敢于谏言 |
-| 8 | [Deliver Results](#8-deliver-results-🟢) | 达成业绩 |
 
 ### 🔵 蓝色 (中优先级)
 | # | LP | 链接 |
 |---|-----|------|
-| 9 | [Invent and Simplify](#9-invent-and-simplify-🔵) | 创新简化 |
-| 10 | [Are Right, a Lot](#10-are-right-a-lot-🔵) | 决策正确 |
+| 8 | [Invent and Simplify](#8-invent-and-simplify-🔵) | 创新简化 |
+| 9 | [Are Right, a Lot](#9-are-right-a-lot-🔵) | 决策正确 |
+| 10 | [Insist on Highest Standards](#10-insist-on-highest-standards-🔵) | 最高标准 |
 | 11 | [Dive Deep](#11-dive-deep-🔵) | 刨根问底 |
 
 ### 🟣 紫色 (较低优先级)
 | # | LP | 链接 |
 |---|-----|------|
-| 12 | [Insist on Highest Standards](#12-insist-on-highest-standards-🟣) | 最高标准 |
+| 12 | [Customer Obsession](#12-customer-obsession-🟣) | 客户至上 |
 
 ### 无色 (了解即可)
 | # | LP | 链接 |
