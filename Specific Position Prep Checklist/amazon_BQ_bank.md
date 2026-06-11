@@ -67,13 +67,30 @@
 5. Describe a time when you had to transition a project you owned to a new owner. What steps did you take to make sure the transition went smoothly?
 6. Tell me about a time when you saw a peer struggling and decided to step in and help.
 
+#### 核心： 
+我是沟通的枢纽，对不同的stakeholders负责
+
 #### My Story:
 ```
-TODO: 填写你的STAR故事
-Situation: 
-Task: 
-Action: 
-Result: (量化!)
+S：
+公司原来把给coach发工资的活外包出去，后来leadership决定拿回来让内部HR部门负责。
+HR接手两周后发现大概10%的coach工资都和实际有出入——因为他们没有完整的课程参与记录和pay rate数据。
+加上每周要手动核验80,000+条记录，经常导致发薪延迟，收到了大量complain，管理层非常重视。
+
+T：
+这件事没有assign给我。我是在公司群聊里偶然看到customer、HR、studio的人在讨论这个complain，
+说需要一个工程师团队尽快搭一个payroll validation pipeline来automate这个过程。
+
+A：
+我意识到DE team本来就有完整的课程参与和pay rate数据，我们来做是最合适的。
+所以我主动联系了HR team直接收集需求，搞清楚他们具体要什么，同时把情况同步给我的manager。
+我propose了一个方案：通过摄取未validate的payroll data，搭建一个基于Snowpipe的ETL pipeline，
+并基于已有的dimensional data进行建模，完成validation并自动交付给HR团队。
+两个团队讨论之后很快肯定了我的propose，我们一起决定current project暂缓两周。
+
+R：
+两周内上线投产。error rate从10%降到1%以下，coach每周按时拿到准确的工资。
+那个被暂缓的项目也在原deadline之前顺利交付了。
 ```
 
 ---
